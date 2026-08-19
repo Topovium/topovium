@@ -1,0 +1,19 @@
+[package]
+name = "topovium-wgpu-common"
+description = "The wgpu implementation of render-api. The only crate permitted to name wgpu types."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+topovium-diagnostics.workspace = true
+topovium-foundation.workspace = true
+topovium-render-api.workspace = true
+log.workspace = true
+wgpu.workspace = true
+
+[lints]
+workspace = true

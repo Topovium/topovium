@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contributor rules
+    url: https://github.com/Topovium/topovium/blob/main/AGENTS.md
+    about: Read these before opening a pull request. They bind humans and AI assistants alike.

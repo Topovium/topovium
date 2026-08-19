@@ -1,0 +1,101 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/foundation",
+    "crates/revisions",
+    "crates/diagnostics",
+    "crates/job-system",
+    "crates/platform-api",
+    "crates/render-api",
+    "crates/render-graph",
+    "crates/gpu-scene",
+    "crates/viewport",
+    "crates/ffi",
+    "backends/wgpu-common",
+    "apps/desktop",
+    "apps/cli",
+    "benchmarks/harness",
+    "tools/xtask",
+]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.97"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/Topovium/topovium"
+homepage = "https://topovium.org"
+authors = ["The Topovium Contributors"]
+
+[workspace.dependencies]
+# Internal crates.
+topovium-foundation = { path = "crates/foundation", version = "0.0.1" }
+topovium-revisions = { path = "crates/revisions", version = "0.0.1" }
+topovium-diagnostics = { path = "crates/diagnostics", version = "0.0.1" }
+topovium-job-system = { path = "crates/job-system", version = "0.0.1" }
+topovium-platform-api = { path = "crates/platform-api", version = "0.0.1" }
+topovium-render-api = { path = "crates/render-api", version = "0.0.1" }
+topovium-render-graph = { path = "crates/render-graph", version = "0.0.1" }
+topovium-gpu-scene = { path = "crates/gpu-scene", version = "0.0.1" }
+topovium-viewport = { path = "crates/viewport", version = "0.0.1" }
+topovium-wgpu-common = { path = "backends/wgpu-common", version = "0.0.1" }
+
+# External. See AGENTS.md section 7 before adding to this list.
+glam = { version = "0.33", features = ["bytemuck"] }
+bitflags = "2.13"
+thiserror = "2.0"
+anyhow = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+log = "0.4"
+env_logger = "0.11"
+clap = { version = "4.6", features = ["derive"] }
+pollster = "1.0"
+raw-window-handle = "0.6"
+bytemuck = { version = "1", features = ["derive"] }
+
+# GPU + windowing. Permitted only in backends/* and apps/*.
+wgpu = "30.0"
+winit = "0.30"
+
+# Web target.
+wasm-bindgen = "0.2"
+web-sys = "0.3"
+console_error_panic_hook = "0.1"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+# AGENTS.md section 4.1: a panic in a DCC is a user's unsaved work.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+# Cost must scale with what changed, not with total scene size.
+needless_collect = "warn"
+large_stack_arrays = "warn"
+
+[profile.dev]
+opt-level = 1
+
+# Dependencies stay optimised even in dev builds: an unoptimised wgpu or glam makes
+# the editor unusable to develop against, which is how performance work stops happening.
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = "debuginfo"
+
+# Benchmarks must measure release code with symbols intact.
+[profile.bench]
+inherits = "release"
+strip = "none"
+debug = 1

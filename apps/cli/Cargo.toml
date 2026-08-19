@@ -1,0 +1,28 @@
+[package]
+name = "topovium-cli"
+description = "Command line tools: capability reports, benchmark runs, trace inspection."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[[bin]]
+name = "topovium"
+path = "src/main.rs"
+
+[dependencies]
+topovium-bench-harness = { path = "../../benchmarks/harness", version = "0.0.1" }
+topovium-diagnostics.workspace = true
+topovium-wgpu-common.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+env_logger.workspace = true
+pollster.workspace = true
+serde_json.workspace = true
+wgpu.workspace = true
+
+[lints]
+workspace = true

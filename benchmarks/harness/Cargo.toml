@@ -1,0 +1,18 @@
+[package]
+name = "topovium-bench-harness"
+description = "Runs benchmark scenes and emits results in the published schema."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[dependencies]
+topovium-diagnostics.workspace = true
+serde = { workspace = true }
+serde_json.workspace = true
+
+[lints]
+workspace = true

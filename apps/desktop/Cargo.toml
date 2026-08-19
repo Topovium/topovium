@@ -1,0 +1,29 @@
+[package]
+name = "topovium-desktop"
+description = "The Topovium desktop editor."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[[bin]]
+name = "topovium-desktop"
+path = "src/main.rs"
+
+[dependencies]
+topovium-diagnostics.workspace = true
+topovium-platform-api.workspace = true
+topovium-viewport.workspace = true
+topovium-wgpu-common.workspace = true
+anyhow.workspace = true
+env_logger.workspace = true
+log.workspace = true
+pollster.workspace = true
+wgpu.workspace = true
+winit.workspace = true
+
+[lints]
+workspace = true

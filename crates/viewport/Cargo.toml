@@ -1,0 +1,17 @@
+[package]
+name = "topovium-viewport"
+description = "Camera, frame budget, and the adaptive quality ladder."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+topovium-diagnostics.workspace = true
+topovium-foundation.workspace = true
+topovium-platform-api.workspace = true
+
+[lints]
+workspace = true

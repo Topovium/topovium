@@ -1,0 +1,21 @@
+[package]
+name = "topovium-foundation"
+description = "Core value types shared by every Topovium crate: handles, arenas, transforms, units."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+glam.workspace = true
+thiserror.workspace = true
+serde = { workspace = true, optional = true }
+
+[features]
+default = []
+serde = ["dep:serde", "glam/serde"]
+
+[lints]
+workspace = true

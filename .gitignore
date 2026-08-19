@@ -1,0 +1,54 @@
+# --- Secrets: see AGENTS.md section 2. Never commit any of these. ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+**/google-services.json
+**/GoogleService-Info.plist
+**/service-account*.json
+secrets/
+
+# --- Rust ---
+/target
+**/target
+*.rs.bk
+*.pdb
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+.pnpm-store/
+
+# --- WASM build output ---
+apps/web/public/wasm/
+
+# --- Native mobile ---
+.build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+.gradle/
+build/
+local.properties
+captures/
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- Benchmark and trace artifacts (published via CI, not committed) ---
+/benchmarks/results/
+/traces/
+*.trace

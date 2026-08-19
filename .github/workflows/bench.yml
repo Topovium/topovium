@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Benchmarks
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+# Results are published to topovium.org/benchmarks. Every one carries the machine it ran
+# on and the command that reproduces it; a number without those is not evidence.
+jobs:
+  measure:
+    name: Nightly measurement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Linux graphics dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libx11-dev libxcursor-dev libxrandr-dev libxi-dev \
+            libwayland-dev libxkbcommon-dev mesa-vulkan-drivers
+
+      - name: Capability report
+        run: cargo run --release -q -p topovium-cli -- capability-dump | tee capability.json
+
+      - name: List scenes
+        run: cargo run --release -q -p topovium-cli -- list-scenes
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: |
+            capability.json
+          retention-days: 90

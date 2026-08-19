@@ -1,0 +1,9 @@
+[toolchain]
+channel = "1.97.0"
+components = ["rustfmt", "clippy", "rust-src"]
+targets = [
+    "aarch64-apple-ios",
+    "aarch64-linux-android",
+    "wasm32-unknown-unknown",
+]
+profile = "minimal"

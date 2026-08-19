@@ -1,0 +1,28 @@
+name: Task
+description: A unit of planned work.
+labels: ["type:feat"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: One sentence. What is true when this is done that is not true now?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Conditions someone else can check. Include numeric targets where one exists.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Design notes
+      description: Constraints, links to the governing ADR or RFC, and anything already ruled out.

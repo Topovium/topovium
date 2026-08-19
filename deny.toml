@@ -1,0 +1,71 @@
+# cargo-deny configuration.
+#
+# Dependencies are permanent commitments and a supply chain surface. This file is
+# where "we thought about it" becomes "the build enforces it". See AGENTS.md section 7.
+
+[graph]
+all-features = true
+
+[advisories]
+# A known vulnerability fails the build. There is no severity threshold below which
+# shipping a known-vulnerable dependency to users is acceptable.
+yanked = "deny"
+
+ignore = [
+    # ttf-parser is unmaintained (no known vulnerability, no safe upgrade published).
+    # It reaches us only through winit -> sctk-adwaita, which draws client-side window
+    # decorations on Linux/Wayland. It never parses untrusted input in Topovium: the
+    # only fonts it sees are the ones the desktop environment already trusts.
+    #
+    # Revisit when winit moves off sctk-adwaita or upstream migrates to `skrifa`.
+    # Tracked as an issue in the 0.0.1 milestone.
+    { id = "RUSTSEC-2026-0192", reason = "Linux-only window decoration path; no untrusted input; no upgrade available upstream" },
+]
+
+[licenses]
+# Topovium is GPL-3.0-or-later. These are the licences that may be combined into it.
+# Anything not listed is a deliberate decision, not an oversight -- add it here with
+# a comment rather than silencing the check.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "MIT",
+    "MIT-0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "CC0-1.0",
+    "Unicode-3.0",
+    "MPL-2.0",
+    "BSL-1.0",
+    # Topovium's own crates.
+    "GPL-3.0",
+    "GPL-3.0-or-later",
+    # Public domain dedication used by memchr, walkdir, aho-corasick, and jiff. These
+    # are always offered as `Unlicense OR MIT`; listing it avoids relying on the
+    # resolver picking the other half of the expression.
+    "Unlicense",
+]
+confidence-threshold = 0.9
+unused-allowed-license = "allow"
+
+[bans]
+# Two versions of the same crate means two copies in the binary and, for anything
+# stateful, two incompatible sets of types. Warn so it is visible, rather than deny,
+# because the graphics ecosystem legitimately lags during upgrades.
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+
+# Crates we will not accept, with the reason. A ban with no reason is unarguable and
+# therefore unmaintainable.
+deny = [
+    # An unmaintained fork; the maintained crate is `openssl`. Listed as an example of
+    # the form these entries take.
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

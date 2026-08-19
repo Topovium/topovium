@@ -1,0 +1,17 @@
+[package]
+name = "topovium-render-api"
+description = "Backend-neutral rendering contract. No wgpu, DX12, Vulkan, or Metal types appear here."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+topovium-diagnostics.workspace = true
+topovium-foundation.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

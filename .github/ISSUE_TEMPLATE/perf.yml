@@ -1,0 +1,41 @@
+name: Performance regression
+description: Something became slower, or a performance gate is failing.
+labels: ["type:perf-gate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Performance reports need numbers. "Feels slow" is a real signal, but it cannot be
+        fixed or verified without a measurement, so please include one.
+
+  - type: input
+    id: scene
+    attributes:
+      label: Scene
+      description: A benchmark scene id, or a description of the scene if it is your own.
+    validations:
+      required: true
+
+  - type: textarea
+    id: measurements
+    attributes:
+      label: Measurements
+      description: p50, p95, p99 before and after. Never an average -- it hides the stalls.
+    validations:
+      required: true
+
+  - type: input
+    id: repro
+    attributes:
+      label: Reproduction command
+    validations:
+      required: true
+
+  - type: textarea
+    id: capability
+    attributes:
+      label: Capability report
+      description: Output of `just capability`.
+      render: json
+    validations:
+      required: true

@@ -1,0 +1,46 @@
+name: Bug report
+description: Something behaves incorrectly.
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please attach a capability report. Most graphics problems turn out to be
+        "this device does not have what the code assumed", and that report answers it
+        in one step:
+
+        ```
+        just capability
+        ```
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what occurred instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The smallest sequence that triggers it. Attach a project file if one is needed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: capability
+    attributes:
+      label: Capability report
+      description: Output of `just capability`.
+      render: json
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true

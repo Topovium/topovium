@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://topovium.org/schemas/capability-report.schema.json",
+  "title": "Topovium capability report",
+  "description": "What a machine can actually do, captured at startup. Emitted by `topovium capability-dump` and attached to every benchmark result and bug report. A performance number without one of these is not reproducible.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "topoviumVersion", "os", "cpuCores", "backend", "adapterName",
+    "driverInfo", "tier", "unifiedMemory", "supportsTimestampQueries", "supportsRayQuery",
+    "supportsMeshShaders", "supportsMultiDrawIndirect", "maxTextureDimension2d", "appliedQuirks"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "topoviumVersion": { "type": "string" },
+    "os": { "type": "string" },
+    "cpuCores": { "type": "integer", "minimum": 1 },
+    "backend": { "enum": ["vulkan", "metal", "dx12", "webgpu", "cpu"] },
+    "adapterName": { "type": "string" },
+    "driverInfo": { "type": "string" },
+    "tier": {
+      "enum": ["basic", "modern", "high-end"],
+      "description": "Derived from measured features, never from a vendor or model string."
+    },
+    "vramBytes": {
+      "type": ["integer", "null"],
+      "description": "Null on unified-memory devices, where a separate figure would double-count."
+    },
+    "unifiedMemory": { "type": "boolean" },
+    "supportsTimestampQueries": { "type": "boolean" },
+    "supportsRayQuery": { "type": "boolean" },
+    "supportsMeshShaders": { "type": "boolean" },
+    "supportsMultiDrawIndirect": { "type": "boolean" },
+    "maxTextureDimension2d": { "type": "integer", "minimum": 1 },
+    "appliedQuirks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Known driver problems matched against this adapter, with the workaround applied."
+    }
+  }
+}

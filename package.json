@@ -1,0 +1,16 @@
+{
+  "name": "topovium",
+  "private": true,
+  "description": "Topovium monorepo root. The Rust workspace is driven by Cargo; see justfile.",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "dev": "pnpm --filter topovium-web dev",
+    "build": "pnpm --filter topovium-web build",
+    "typecheck": "pnpm --filter topovium-web typecheck",
+    "lint": "pnpm --filter topovium-web lint"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=22"
+  }
+}

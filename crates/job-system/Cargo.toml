@@ -1,0 +1,16 @@
+[package]
+name = "topovium-job-system"
+description = "Priority-scheduled, cancellable background work tagged with input revisions."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+topovium-revisions.workspace = true
+log.workspace = true
+
+[lints]
+workspace = true

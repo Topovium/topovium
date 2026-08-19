@@ -1,0 +1,30 @@
+[package]
+name = "topovium-ffi"
+description = "C ABI consumed by the Swift and Kotlin platform shells."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+# staticlib for iOS, cdylib for Android, rlib so Rust tests can exercise it.
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+topovium-diagnostics.workspace = true
+topovium-platform-api.workspace = true
+topovium-viewport.workspace = true
+
+# This crate does not use the shared workspace lints: it is one of the two places
+# where `unsafe` is permitted, per AGENTS.md section 4.1. Everything else still applies.
+[lints.rust]
+missing_debug_implementations = "warn"
+unsafe_op_in_unsafe_fn = "deny"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"

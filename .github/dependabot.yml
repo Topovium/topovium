@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+version: 2
+updates:
+  # Grouped, not one PR per crate. A flood of individual dependency PRs trains people
+  # to merge them without reading, which is the opposite of what they are for.
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      rust-dependencies:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: npm
+    directory: /apps/web
+    schedule:
+      interval: weekly
+    groups:
+      web-dependencies:
+        patterns: ["*"]
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

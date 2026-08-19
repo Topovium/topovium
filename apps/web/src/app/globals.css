@@ -1,0 +1,106 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+@import "tailwindcss";
+
+/*
+ * Tokens.
+ *
+ * The three accents are not decoration: each names a real state in the renderer, so
+ * the palette carries meaning rather than mood. `near` is the near plane and "within
+ * frame budget"; `far` is depth; `stall` is a frame that missed its budget. Using them
+ * for anything else would make the site lie about the product.
+ */
+@theme {
+  --color-void: #0b0d10;
+  --color-slate: #171a20;
+  --color-raised: #1f242c;
+  --color-rule: #2a2f39;
+  --color-chalk: #e6e9ef;
+  --color-mute: #8a94a6;
+  --color-near: #56e0c8;
+  --color-far: #6b4bff;
+  --color-stall: #ff5470;
+
+  --font-display: var(--font-archivo), "Arial Black", sans-serif;
+  --font-body: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-chalk);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display type: expanded, heavy, tight. The engineering-poster register. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 125%;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+/* Small structural labels. Used for state, never for decoration. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+}
+
+/* The measurement rail that runs down the left of every page. */
+.rail {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-rule) 0,
+    var(--color-rule) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+}
+
+:where(a, button, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-near);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* The one orchestrated moment: capability rows resolving like an instrument booting. */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.row-in {
+  animation: row-in 320ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}

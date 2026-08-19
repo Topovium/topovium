@@ -1,0 +1,17 @@
+[package]
+name = "topovium-gpu-scene"
+description = "Persistent GPU scene: columnar object records and coalesced delta uploads."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+topovium-foundation.workspace = true
+topovium-revisions.workspace = true
+bytemuck.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,41 @@
+name: RFC
+description: A design decision that needs to be written down before it is built.
+labels: ["type:rfc"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        RFCs exist for decisions that are expensive to reverse: data formats, memory
+        models, GPU synchronisation, plugin interfaces. AGENTS.md section 1.3 lists the
+        areas where one is mandatory.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What forces this decision, and what breaks if it is made badly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: options
+    attributes:
+      label: Options considered
+      description: At least two, each with its trade-off. One option is a decision already made.
+    validations:
+      required: true
+
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+    validations:
+      required: true
+
+  - type: textarea
+    id: reversibility
+    attributes:
+      label: How hard is this to reverse
+      description: If the answer is "very", say what a migration would involve.
+    validations:
+      required: true
