@@ -12,18 +12,21 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
-  RUSTFLAGS: -D warnings
 
+# Deliberately no `paths:` filters anywhere in this workflow.
+#
+# A required status check that is path-filtered never reports on a pull request that
+# does not touch that path, and GitHub treats "never reported" as "still pending" --
+# so the pull request can never merge. Every job here runs on every pull request, and
+# the `ci` job at the bottom is the single check to mark as required.
 jobs:
-  rust:
-    name: Rust
+  # ------------------------------------------------------------------ lint
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install toolchain
-        run: rustup show   # honours rust-toolchain.toml
-
+      - uses: actions/checkout@v7
+      - run: rustup show   # honours rust-toolchain.toml
       - uses: Swatinem/rust-cache@v2
 
       - name: Install Linux graphics dependencies
@@ -33,30 +36,38 @@ jobs:
             libx11-dev libxcursor-dev libxrandr-dev libxi-dev \
             libwayland-dev libxkbcommon-dev
 
-      - name: Format
+      - name: Rust format
         run: cargo fmt --all --check
 
-      - name: Clippy
+      - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
-
-      - name: Test
-        run: cargo test --workspace
 
       # AGENTS.md section 4.3. An architecture diagram is a wish until something
       # fails the build when it is violated.
       - name: Architectural boundaries
         run: cargo run -q -p xtask -- check-boundaries
 
-  deny:
-    name: Dependencies
+  # ------------------------------------------------------------------ test
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: EmbarkStudios/cargo-deny-action@v2
-        with:
-          command: check
+      - uses: actions/checkout@v7
+      - run: rustup show
+      - uses: Swatinem/rust-cache@v2
 
-  build-matrix:
+      - name: Install Linux graphics dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libx11-dev libxcursor-dev libxrandr-dev libxi-dev \
+            libwayland-dev libxkbcommon-dev
+
+      - name: Rust tests
+        run: cargo test --workspace
+
+  # ------------------------------------------------------------------ build
+  build:
     name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -64,7 +75,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup show
       - uses: Swatinem/rust-cache@v2
 
@@ -76,7 +87,99 @@ jobs:
             libx11-dev libxcursor-dev libxrandr-dev libxi-dev \
             libwayland-dev libxkbcommon-dev
 
-      # The desktop editor must build on all three desktop platforms every time.
       # Discovering a Windows-only build break at release is discovering it too late.
       - name: Build desktop and CLI
         run: cargo build -p topovium-desktop -p topovium-cli
+
+  # ------------------------------------------------------------------- web
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # --frozen-lockfile stays. A CI run that silently updates the lockfile installs
+      # dependencies nobody tested, which defeats the point of committing one.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm --filter topovium-web typecheck
+
+      # `any` is an error, not a warning. Next 16 no longer runs ESLint during
+      # `next build`, so it runs here as its own step.
+      - name: Lint
+        run: pnpm --filter topovium-web lint
+
+      - name: Build
+        run: pnpm --filter topovium-web build
+
+  # ------------------------------------------------------------------- wasm
+  wasm:
+    name: WebAssembly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup show
+      - run: rustup target add wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+
+      # The browser is a first-class target, so the core must keep compiling for it.
+      - name: Build core for wasm32
+        run: |
+          cargo build --target wasm32-unknown-unknown \
+            -p topovium-foundation \
+            -p topovium-revisions \
+            -p topovium-diagnostics \
+            -p topovium-gpu-scene \
+            -p topovium-viewport
+
+  # ----------------------------------------------------------- dependencies
+  deny:
+    name: Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check
+
+  # --------------------------------------------------------------- the gate
+  #
+  # Mark THIS job as the required status check in branch protection, not the jobs
+  # above. Two reasons:
+  #
+  #   1. Matrix jobs produce names like "Build (windows-latest)". Adding a platform
+  #      changes the set of check names, and any name you required that no longer
+  #      exists blocks every pull request until someone edits branch protection.
+  #   2. A new job added below is covered automatically, because `needs` fails this
+  #      job if any dependency fails.
+  #
+  # `if: always()` plus an explicit result check is required: without it, a skipped
+  # or cancelled dependency would let this job pass silently.
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    needs: [lint, test, build, web, wasm, deny]
+    if: always()
+    steps:
+      - name: Check that every job succeeded
+        run: |
+          echo "lint:  ${{ needs.lint.result }}"
+          echo "test:  ${{ needs.test.result }}"
+          echo "build: ${{ needs.build.result }}"
+          echo "web:   ${{ needs.web.result }}"
+          echo "wasm:  ${{ needs.wasm.result }}"
+          echo "deny:  ${{ needs.deny.result }}"
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ] \
+          || [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ] \
+          || [ "${{ contains(needs.*.result, 'skipped') }}" = "true" ]; then
+            echo "::error::One or more CI jobs did not succeed."
+            exit 1
+          fi
+          echo "All CI jobs succeeded."

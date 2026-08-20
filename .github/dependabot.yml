@@ -1,27 +1,48 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 version: 2
 updates:
-  # Grouped, not one PR per crate. A flood of individual dependency PRs trains people
-  # to merge them without reading, which is the opposite of what they are for.
+  # Grouped, not one pull request per crate. A flood of individual dependency updates
+  # trains people to merge them without reading, which is the opposite of their purpose.
   - package-ecosystem: cargo
     directory: /
     schedule:
       interval: weekly
     groups:
-      rust-dependencies:
+      rust-patch-and-minor:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+    # Majors get their own pull request so they are read rather than skimmed inside a group.
     open-pull-requests-limit: 3
 
+  # NOTE: this must be `/`, not `/apps/web`.
+  #
+  # pnpm keeps one lockfile at the workspace root. Pointed at `/apps/web`, Dependabot
+  # edits `apps/web/package.json` but cannot see `pnpm-lock.yaml`, so every update it
+  # opens fails CI with ERR_PNPM_OUTDATED_LOCKFILE. See issue #140.
   - package-ecosystem: npm
-    directory: /apps/web
+    directory: /
     schedule:
       interval: weekly
     groups:
-      web-dependencies:
+      web-patch-and-minor:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      # TypeScript 7 is the native Go port -- a different compiler implementation.
+      # typescript-eslint and next's type plugin both need verifying against it before
+      # adoption, which is a deliberate piece of work, not a dependency bump.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      # ESLint 10 is a major release; eslint-config-next and typescript-eslint peer
+      # ranges need checking first. Tracked in the 0.0.1 milestone.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 3
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

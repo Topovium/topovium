@@ -15,7 +15,7 @@ jobs:
     name: Android (aarch64)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup show
       - run: rustup target add aarch64-linux-android
       - uses: Swatinem/rust-cache@v2
@@ -36,7 +36,7 @@ jobs:
     name: iOS (aarch64)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: rustup show
       - run: rustup target add aarch64-apple-ios
       - uses: Swatinem/rust-cache@v2
