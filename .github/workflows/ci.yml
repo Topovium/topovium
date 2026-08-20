@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 name: CI
 
+# Runs on every push to every branch and on every pull request. No branch filter and
+# no path filter anywhere: a required status check that does not report is treated by
+# GitHub as still pending, which blocks the pull request forever.
 on:
   push:
-    branches: [main]
   pull_request:
 
 concurrency:
