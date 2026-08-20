@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# gitleaks configuration. See AGENTS.md section 2.
+#
+# Everything here is an exclusion of generated or vendored output that is already
+# gitignored and can never reach a commit. Nothing in this file relaxes scanning of
+# source. If you are tempted to add a path here to silence a finding in code you wrote,
+# the finding is real -- rotate the credential first, then remove it.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated build output. Gitignored, never committed, regenerated on every build."
+paths = [
+  # Next.js writes preview and server-action encryption keys into its build cache.
+  # They are generated per build, local to the machine, and never published.
+  '''apps/web/\.next/.*''',
+  '''apps/web/out/.*''',
+  # Rust and Node build artifacts.
+  '''target/.*''',
+  '''node_modules/.*''',
+  # Lockfiles contain integrity hashes that pattern-match as high-entropy strings.
+  '''pnpm-lock\.yaml''',
+  '''Cargo\.lock''',
+]
